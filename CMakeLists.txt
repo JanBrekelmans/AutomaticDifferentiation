@@ -41,8 +41,9 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/application/main.cpp)
 target_link_libraries(main ${PROJECT_NAME})
 set_property(TARGET main PROPERTY CXX_STANDARD 20)
-# ---- Add testing ----
 
+
+# ---- Add testing ----
 set(TEST_PROJECT_NAME ${PROJECT_NAME}Test)
 add_executable(${TEST_PROJECT_NAME} ${test_sources})
 target_link_libraries(${TEST_PROJECT_NAME} doctest::doctest ${PROJECT_NAME})
