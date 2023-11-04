@@ -10,7 +10,6 @@ on:
 
 env:
   CTEST_OUTPIT_ON_FAILURE: 1
-  CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
   CPM_SOURCE_CACHE: ${{github.workspace}}/cpm_modules
 
 jobs:
@@ -42,4 +41,6 @@ jobs:
 
       - name: Code coverage Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
-        run: bash <(curl -s https://codecov.io/bash) || echo "Code coverage dit not collect coverage reports"
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
