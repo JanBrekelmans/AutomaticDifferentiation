@@ -9,6 +9,9 @@ namespace AD::Forward {
     template <typename T>
     struct Dual;
 
+    template<typename Op, typename T>
+    struct UnaryExpression;
+
     namespace internal {
         template <typename T>
         struct IsDual {
@@ -17,6 +20,16 @@ namespace AD::Forward {
 
         template <typename T>
         struct IsDual<Dual<T>> {
+            constexpr static bool value = true;
+        };
+
+        template<typename T>
+        struct IsUnaryExpression {
+            constexpr static bool value = false;
+        };
+
+        template<typename Op, typename T>
+        struct IsUnaryExpression<UnaryExpression<Op, T>> {
             constexpr static bool value = true;
         };
     }  // namespace internal
@@ -29,6 +42,12 @@ namespace AD::Forward {
 
     template<typename T>
     concept IsDual = internal::IsDual<PlainType<T>>::value;
+
+    template<typename T>
+    concept IsUnaryExpression = internal::IsUnaryExpression<PlainType<T>>::value;
+
+    template<typename T>
+    concept IsExpression = IsDual<T> or IsUnaryExpression<T>;
 
     template <typename T, typename Other>
     constexpr void assign(Dual<T>& dual, Other&& other);
