@@ -51,3 +51,9 @@ set_property(TARGET ${TEST_PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 doctest_discover_tests(${TEST_PROJECT_NAME})
+
+# ----Code coverage ----
+if(ENABLE_TEST_COVERAGE)
+  target_compile_options(${TEST_PROJECT_NAME} PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
+  target_link_options(${TEST_PROJECT_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
+endif()
