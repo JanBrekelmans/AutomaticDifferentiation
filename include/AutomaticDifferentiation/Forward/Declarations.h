@@ -70,6 +70,21 @@ namespace AD::Forward {
     /* Unary expressions */
     using std::cos;
     using std::sin;
+    using std::tan;
+
+    using std::acos;
+    using std::asin;
+    using std::atan;
+
+    using std::sinh;
+    using std::cosh;
+    using std::tanh;
+
+    using std::exp;
+    using std::log;
+
+    using std::pow;
+    using std::sqrt;
 
     // Unary operators
     struct PositiveOperator {};
@@ -79,6 +94,14 @@ namespace AD::Forward {
     struct SinOperator {};
 
     struct CosOperator {};
+
+    struct TanOperator {};
+
+    struct AcosOperator {};
+
+    struct AsinOperator {};
+
+    struct AtanOperator {};
 
     template <typename T>
     using PositiveExpression = UnaryExpression<PositiveOperator, T>;
@@ -91,6 +114,18 @@ namespace AD::Forward {
 
     template<typename T>
     using CosExpression = UnaryExpression<CosOperator,T>;
+
+    template<typename T>
+    using TanExpression = UnaryExpression<TanOperator,T>;
+
+    template<typename T>
+    using AsinExpression = UnaryExpression<AsinOperator,T>;
+
+    template<typename T>
+    using AcosExpression = UnaryExpression<AcosOperator,T>;
+
+    template<typename T>
+    using AtanExpression = UnaryExpression<AtanOperator, T>;
 
     namespace internal {
         template <typename T>

@@ -97,6 +97,26 @@ namespace AD::Forward {
         return CosExpression<DualType<Expr>>{expr};
     }
 
+    template<typename Expr> requires IsExpression<Expr>
+    constexpr auto tan(Expr&& expr) {
+        return TanExpression<DualType<Expr>>{expr};
+    }
+
+    template<typename Expr> requires IsExpression<Expr>
+    constexpr auto asin(Expr&& expr) {
+        return AsinExpression<DualType<Expr>>{expr};
+    }
+
+    template<typename Expr> requires IsExpression<Expr>
+    constexpr auto acos(Expr&& expr) {
+        return AcosExpression<DualType<Expr>>{expr};
+    }
+
+    template<typename Expr> requires IsExpression<Expr>
+    constexpr auto atan(Expr&& expr) {
+        return AtanExpression<DualType<Expr>>{expr};
+    }
+
     template <typename T>
     constexpr void apply(NegativeOperator, Dual<T>& dual) {
         dual.a = -dual.a;
@@ -113,5 +133,29 @@ namespace AD::Forward {
     constexpr void apply(CosOperator, Dual<T>& dual) {
         dual.b *= -sin(dual.a);
         dual.a = cos(dual.a);
+    }
+
+    template<typename T>
+    constexpr void apply(TanOperator, Dual<T>& dual) {
+        dual.b *= 1 / (cos(dual.a) * cos(dual.a));
+        dual.a = tan(dual.a);
+    }
+
+    template<typename T>
+    constexpr void apply(AsinOperator, Dual<T>& dual) {
+        dual.b *= One<T> / sqrt(One<T> - dual.a * dual.a);
+        dual.a = asin(dual.a);
+    }
+
+    template<typename T>
+    constexpr void apply(AcosOperator, Dual<T>& dual) {
+        dual.b *= -One<T> / sqrt(One<T> - dual.a * dual.a);
+        dual.a = acos(dual.a);
+    }
+
+    template<typename T>
+    constexpr void apply(AtanOperator, Dual<T>& dual) {
+        dual.b *= One<T> / (One<T> + dual.a * dual.a);
+        dual.a = atan(dual.a);
     }
 }  // namespace AD::Forward
