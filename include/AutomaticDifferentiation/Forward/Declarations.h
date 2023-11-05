@@ -123,15 +123,12 @@ namespace AD::Forward {
     }  // namespace internal
 
     template <typename T>
-    using UnaryOperatorType = internal::UnaryOperatorType<PlainType<T>>::type;
+    using UnaryOperatorType = typename internal::UnaryOperatorType<PlainType<T>>::type;
 
     template <typename T>
     concept IsPositiveExpression = internal::IsPositiveExpression<PlainType<T>>::value;
 
     template <typename T>
     concept IsNegativeExpression = internal::IsNegativeExpression<PlainType<T>>::value;
-
-    template <typename T, typename Op>
-    constexpr void apply(Dual<T>& dual);
 
 }  // namespace AD::Forward
