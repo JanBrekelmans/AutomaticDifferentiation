@@ -83,7 +83,7 @@ namespace AD::Forward {
         if constexpr (IsNegativeExpression<Expr>) {
             return operand(expr);
         } else {
-            return NegativeExpression<DualType<Expr>>(expr);
+            return NegativeExpression<DualType<Expr>>{expr};
         }
     }
 
