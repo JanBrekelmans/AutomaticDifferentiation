@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14...3.22)
 
 project(
-    JaBreStream
+    AutomaticDifferentiation
     VERSION 0.0.1
     LANGUAGES CXX
 )
@@ -42,6 +42,17 @@ add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/application/main.cpp)
 target_link_libraries(main ${PROJECT_NAME})
 set_property(TARGET main PROPERTY CXX_STANDARD 20)
 
+# ---- Add examples ----
+file(GLOB_RECURSE examples CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp)
+foreach(example ${examples})
+    get_filename_component(CPPNAME ${example} NAME_WE)
+    get_filename_component(CPPFOLDER ${example} DIRECTORY)
+    get_filename_component(PARENTFOLDER ${CPPFOLDER} NAME_WE)
+    string(CONCAT EXAMPLE_NAME ${PARENTFOLDER} "_" ${CPPNAME})
+    add_executable(${EXAMPLE_NAME} ${example})
+    target_link_libraries(${EXAMPLE_NAME} ${PROJECT_NAME})
+    set_target_properties(${EXAMPLE_NAME} PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
+endforeach()
 
 # ---- Add testing ----
 set(TEST_PROJECT_NAME ${PROJECT_NAME}Test)

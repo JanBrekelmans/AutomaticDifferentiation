@@ -46,66 +46,127 @@ TEST_CASE("Sin operator") {
     using namespace AD::Forward;
 
     dual x = 1.0;
-    seed(x);
+    auto f = [&](dual t) { return sin(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    dual y = sin(x);
-
-    CHECK(y.a == sin(1.0));
-    CHECK(y.b == cos(1.0));
+    CHECK(y == sin(1.0));
+    CHECK(dy == cos(1.0));
 }
 
 TEST_CASE("Cos operator") {
     using namespace AD::Forward;
 
     dual x = 1.0;
-    seed(x);
+    auto f = [&](dual t) { return cos(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    dual y = cos(x);
-
-    CHECK(y.a == cos(1.0));
-    CHECK(y.b == -sin(1.0));
+    CHECK(y == cos(1.0));
+    CHECK(dy == -sin(1.0));
 }
 
 TEST_CASE("Tan operator") {
     using namespace AD::Forward;
 
     dual x = 1.0;
-    seed(x);
-    dual y = tan(x);
+    auto f = [&](dual t) { return tan(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    CHECK(y.a == tan(1.0));
-    CHECK(y.b == 1 / (cos(1.0) * cos(1.0)));
+    CHECK(y == tan(1.0));
+    CHECK(dy == 1 / (cos(1.0) * cos(1.0)));
 }
 
 TEST_CASE("Asin operator") {
     using namespace AD::Forward;
 
     dual x = 0.5;
-    seed(x);
-    dual y = asin(x);
+    auto f = [&](dual t) { return asin(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    CHECK(y.a == asin(0.5));
-    CHECK(y.b == 1 / sqrt(1 - 0.5 * 0.5));
+    CHECK(y == asin(0.5));
+    CHECK(dy == 1 / sqrt(1 - 0.5 * 0.5));
 }
 
 TEST_CASE("Acos operator") {
     using namespace AD::Forward;
 
     dual x = 0.5;
-    seed(x);
-    dual y = acos(x);
+    auto f = [&](dual t) { return acos(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    CHECK(y.a == acos(0.5));
-    CHECK(y.b == -1 / sqrt(1 - 0.5 * 0.5));
+    CHECK(y == acos(0.5));
+    CHECK(dy == -1 / sqrt(1 - 0.5 * 0.5));
 }
 
 TEST_CASE("Atan operator") {
     using namespace AD::Forward;
 
     dual x = 1.0;
-    seed(x);
-    dual y = atan(x);
+    auto f = [&](dual t) { return atan(t); };
+    auto [y, dy] = derivative(f, at(x), x);
 
-    CHECK(y.a == atan(1.0));
-    CHECK(doctest::Approx(y.b) == 1.0 / (1 + 1 * 1));
+    CHECK(y == atan(1.0));
+    CHECK(dy == 1.0 / (1 + 1 * 1));
+}
+
+TEST_CASE("Sinh operator") {
+    using namespace AD::Forward;
+
+    dual x = 1.0;
+    auto f = [&](dual t) { return sinh(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == sinh(1.0));
+    CHECK(dy == cosh(1.0));
+}
+
+TEST_CASE("Cosh operator") {
+    using namespace AD::Forward;
+
+    dual x = 1.0;
+    auto f = [&](dual t) { return cosh(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == cosh(1.0));
+    CHECK(dy == sinh(1.0));
+}
+
+TEST_CASE("Tanh operator") {
+    using namespace AD::Forward;
+
+    dual x = 1.0;
+    auto f = [&](dual t) { return tanh(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == tanh(1.0));
+    CHECK(dy == 1.0 / (cosh(1.0) * cosh(1.0)));
+}
+
+TEST_CASE("Exp operator") {
+    using namespace AD::Forward;
+    dual x = 1.0;
+    auto f = [&](dual t) { return exp(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == exp(1.0));
+    CHECK(dy == exp(1.0));
+}
+
+TEST_CASE("Log operator") {
+    using namespace AD::Forward;
+    dual x = 1.0;
+    auto f = [&](dual t) { return log(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == log(1.0));
+    CHECK(dy == 1.0 / 1.0);
+}
+
+TEST_CASE("Sqrt operator") {
+    using namespace AD::Forward;
+    dual x = 1.0;
+    auto f = [&](dual t) { return sqrt(t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == sqrt(1.0));
+    CHECK(dy == 0.5 / sqrt(1.0));
 }

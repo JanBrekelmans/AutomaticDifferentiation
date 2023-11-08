@@ -15,6 +15,9 @@ namespace AD::Forward {
     template <typename Op, typename T>
     struct UnaryExpression;
 
+    template <typename Op, typename L, typename R>
+    struct BinaryExpression;
+
     namespace internal {
         template <typename T>
         struct IsDual {
@@ -35,6 +38,16 @@ namespace AD::Forward {
         struct IsUnaryExpression<UnaryExpression<Op, T>> {
             constexpr static bool value = true;
         };
+
+        template <typename T>
+        struct IsBinaryExpression {
+            constexpr static bool value = false;
+        };
+
+        template <typename Op, typename L, typename R>
+        struct IsBinaryExpression<BinaryExpression<Op, L, R>> {
+            constexpr static bool value = true;
+        };
     }  // namespace internal
 
     template <typename T>
@@ -50,7 +63,10 @@ namespace AD::Forward {
     concept IsUnaryExpression = internal::IsUnaryExpression<PlainType<T>>::value;
 
     template <typename T>
-    concept IsExpression = IsDual<T> or IsUnaryExpression<T>;
+    concept IsBinaryExpression = internal::IsBinaryExpression<PlainType<T>>::value;
+
+    template <typename T>
+    concept IsExpression = IsDual<T> or IsUnaryExpression<T> or IsBinaryExpression<T>;
 
     template <typename T>
     using DualType = std::conditional_t<IsDual<T>, T, PlainType<T>>;
@@ -76,14 +92,13 @@ namespace AD::Forward {
     using std::asin;
     using std::atan;
 
-    using std::sinh;
     using std::cosh;
+    using std::sinh;
     using std::tanh;
 
     using std::exp;
     using std::log;
 
-    using std::pow;
     using std::sqrt;
 
     // Unary operators
@@ -103,6 +118,18 @@ namespace AD::Forward {
 
     struct AtanOperator {};
 
+    struct SinhOperator {};
+
+    struct CoshOperator {};
+
+    struct TanhOperator {};
+
+    struct ExpOperator {};
+
+    struct LogOperator {};
+
+    struct SqrtOperator {};
+
     template <typename T>
     using PositiveExpression = UnaryExpression<PositiveOperator, T>;
 
@@ -112,20 +139,38 @@ namespace AD::Forward {
     template <typename T>
     using SinExpression = UnaryExpression<SinOperator, T>;
 
-    template<typename T>
-    using CosExpression = UnaryExpression<CosOperator,T>;
+    template <typename T>
+    using CosExpression = UnaryExpression<CosOperator, T>;
 
-    template<typename T>
-    using TanExpression = UnaryExpression<TanOperator,T>;
+    template <typename T>
+    using TanExpression = UnaryExpression<TanOperator, T>;
 
-    template<typename T>
-    using AsinExpression = UnaryExpression<AsinOperator,T>;
+    template <typename T>
+    using AsinExpression = UnaryExpression<AsinOperator, T>;
 
-    template<typename T>
-    using AcosExpression = UnaryExpression<AcosOperator,T>;
+    template <typename T>
+    using AcosExpression = UnaryExpression<AcosOperator, T>;
 
-    template<typename T>
+    template <typename T>
     using AtanExpression = UnaryExpression<AtanOperator, T>;
+
+    template <typename T>
+    using SinhExpression = UnaryExpression<SinhOperator, T>;
+
+    template <typename T>
+    using CoshExpression = UnaryExpression<CoshOperator, T>;
+
+    template <typename T>
+    using TanhExpression = UnaryExpression<TanhOperator, T>;
+
+    template <typename T>
+    using ExpExpression = UnaryExpression<ExpOperator, T>;
+
+    template <typename T>
+    using LogExpression = UnaryExpression<LogOperator, T>;
+
+    template <typename T>
+    using SqrtExpression = UnaryExpression<SqrtOperator, T>;
 
     namespace internal {
         template <typename T>
@@ -165,5 +210,7 @@ namespace AD::Forward {
 
     template <typename T>
     concept IsNegativeExpression = internal::IsNegativeExpression<PlainType<T>>::value;
+
+    // Binary Expressions
 
 }  // namespace AD::Forward
