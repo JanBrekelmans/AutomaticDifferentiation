@@ -37,6 +37,22 @@ namespace AD::Forward {
         return expression.t;
     }
 
+    template <typename Op, typename L, typename R>
+    struct BinaryExpression {
+        L l;
+        R r;
+    };
+
+    template <typename Op, typename L, typename R>
+    auto left(const BinaryExpression<Op, L, R>& expression) -> const L {
+        return expression.l;
+    }
+
+    template <typename Op, typename L, typename R>
+    auto right(const BinaryExpression<Op, L, R>& expression) -> const R {
+        return expression.r;
+    }
+
     /* Assignment operations */
 
     template <typename T, typename Other>
@@ -50,6 +66,8 @@ namespace AD::Forward {
         } else if constexpr (IsUnaryExpression<Other>) {
             assign(dual, other.t);
             apply(UnaryOperatorType<Other>{}, dual);
+        } else if constexpr (IsBinaryExpression<Other>) {
+             
         }
     }
 
@@ -140,17 +158,20 @@ namespace AD::Forward {
         return TanhExpression<DualType<Expr>>{expr};
     }
 
-    template<typename Expr> requires IsExpression<Expr>
+    template <typename Expr>
+        requires IsExpression<Expr>
     constexpr auto exp(Expr&& expr) {
         return ExpExpression<DualType<Expr>>{expr};
     }
 
-    template<typename Expr> requires IsExpression<Expr>
+    template <typename Expr>
+        requires IsExpression<Expr>
     constexpr auto log(Expr&& expr) {
         return LogExpression<DualType<Expr>>{expr};
     }
 
-    template<typename Expr> requires IsExpression<Expr>
+    template <typename Expr>
+        requires IsExpression<Expr>
     constexpr auto sqrt(Expr&& expr) {
         return SqrtExpression<DualType<Expr>>{expr};
     }
@@ -215,21 +236,32 @@ namespace AD::Forward {
         dual.a = tanh(dual.a);
     }
 
-    template<typename T>
+    template <typename T>
     constexpr void apply(ExpOperator, Dual<T>& dual) {
         dual.a = exp(dual.a);
         dual.b *= dual.a;
     }
 
-    template<typename T>
+    template <typename T>
     constexpr void apply(LogOperator, Dual<T>& dual) {
         dual.b *= One<T> / dual.a;
         dual.a = log(dual.a);
     }
 
-    template<typename T>
+    template <typename T>
     constexpr void apply(SqrtOperator, Dual<T>& dual) {
         dual.a = sqrt(dual.a);
         dual.b *= 0.5 / dual.a;
+    }
+
+    // Binary Expressions
+    template <typename L, typename R>
+        requires IsOperable<L, R>
+    constexpr auto operator+(L&& l, R&& r) {
+        if constexpr (IsArithmetic<R>) {
+            return std::forward<R>(r) + std::forward<L>(l);
+        } else {
+            return AdditionExpression<DualType<L>, DualType<R>>{l, r};
+        }
     }
 }  // namespace AD::Forward

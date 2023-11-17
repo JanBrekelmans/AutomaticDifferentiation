@@ -54,7 +54,7 @@ namespace AD::Forward {
     using PlainType = std::remove_cv_t<std::remove_reference_t<T>>;
 
     template <typename T>
-    constexpr auto IsArithmetic = std::is_arithmetic_v<PlainType<T>>;
+    concept IsArithmetic = std::is_arithmetic_v<PlainType<T>>;
 
     template <typename T>
     concept IsDual = internal::IsDual<PlainType<T>>::value;
@@ -67,6 +67,9 @@ namespace AD::Forward {
 
     template <typename T>
     concept IsExpression = IsDual<T> or IsUnaryExpression<T> or IsBinaryExpression<T>;
+
+    template<typename L, typename R>
+    concept IsOperable = (IsExpression<L> and IsExpression<R>) or (IsExpression<L> and IsArithmetic<R>) or (IsArithmetic<L> and IsExpression<R>);
 
     template <typename T>
     using DualType = std::conditional_t<IsDual<T>, T, PlainType<T>>;
@@ -212,5 +215,10 @@ namespace AD::Forward {
     concept IsNegativeExpression = internal::IsNegativeExpression<PlainType<T>>::value;
 
     // Binary Expressions
+
+    struct AdditionOperation {};
+
+    template<typename L, typename R>
+    using AdditionExpression = BinaryExpression<AdditionOperation, L, R>;
 
 }  // namespace AD::Forward
