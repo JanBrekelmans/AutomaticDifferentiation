@@ -67,7 +67,15 @@ namespace AD::Forward {
             assign(dual, other.t);
             apply(UnaryOperatorType<Other>{}, dual);
         } else if constexpr (IsBinaryExpression<Other>) {
-             
+            if constexpr (IsAdditionExpression<Other>) {
+                Dual<T> temp = left(other);
+                assign(dual, right(other));
+
+                dual.a += temp.a;
+                dual.b += temp.b;
+            }
+        } else {
+            auto i = 1;
         }
     }
 

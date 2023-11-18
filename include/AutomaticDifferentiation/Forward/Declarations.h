@@ -68,7 +68,7 @@ namespace AD::Forward {
     template <typename T>
     concept IsExpression = IsDual<T> or IsUnaryExpression<T> or IsBinaryExpression<T>;
 
-    template<typename L, typename R>
+    template <typename L, typename R>
     concept IsOperable = (IsExpression<L> and IsExpression<R>) or (IsExpression<L> and IsArithmetic<R>) or (IsArithmetic<L> and IsExpression<R>);
 
     template <typename T>
@@ -218,7 +218,27 @@ namespace AD::Forward {
 
     struct AdditionOperation {};
 
-    template<typename L, typename R>
+    struct SubtractionOperation {};
+
+    template <typename L, typename R>
     using AdditionExpression = BinaryExpression<AdditionOperation, L, R>;
+
+    template<typename L, typename R>
+    using SubtractionExpression = BinaryExpression<SubtractionOperation, L,R>;
+
+    namespace internal {
+        template <typename T>
+        struct IsAdditionExpression {
+            constexpr static bool value = false;
+        };
+
+        template <typename L, typename R>
+        struct IsAdditionExpression<AdditionExpression<L, R>> {
+            constexpr static bool value = true;
+        };
+    }  // namespace internal
+
+    template <typename T>
+    concept IsAdditionExpression = internal::IsAdditionExpression<PlainType<T>>::value;
 
 }  // namespace AD::Forward
