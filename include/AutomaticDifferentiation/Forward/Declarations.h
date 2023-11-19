@@ -218,13 +218,18 @@ namespace AD::Forward {
 
     struct AdditionOperation {};
 
-    struct SubtractionOperation {};
+    struct MultiplicationOperation {};
+
+    struct DivisionOperation {};
 
     template <typename L, typename R>
     using AdditionExpression = BinaryExpression<AdditionOperation, L, R>;
 
-    template<typename L, typename R>
-    using SubtractionExpression = BinaryExpression<SubtractionOperation, L,R>;
+    template <typename L, typename R>
+    using MultiplicationExpression = BinaryExpression<MultiplicationOperation, L, R>;
+
+    template <typename L, typename R>
+    using DivisionExpression = BinaryExpression<DivisionOperation, L, R>;
 
     namespace internal {
         template <typename T>
@@ -236,9 +241,35 @@ namespace AD::Forward {
         struct IsAdditionExpression<AdditionExpression<L, R>> {
             constexpr static bool value = true;
         };
+
+        template <typename T>
+        struct IsMultiplicationExpression {
+            constexpr static bool value = false;
+        };
+
+        template <typename L, typename R>
+        struct IsMultiplicationExpression<MultiplicationExpression<L, R>> {
+            constexpr static bool value = true;
+        };
+
+        template <typename T>
+        struct IsDivisionExpression {
+            constexpr static bool value = false;
+        };
+
+        template <typename L, typename R>
+        struct IsDivisionExpression<DivisionExpression<L, R>> {
+            constexpr static bool value = true;
+        };
+
     }  // namespace internal
 
     template <typename T>
     concept IsAdditionExpression = internal::IsAdditionExpression<PlainType<T>>::value;
 
+    template <typename T>
+    concept IsMultiplicationExpression = internal::IsMultiplicationExpression<PlainType<T>>::value;
+
+    template <typename T>
+    concept IsDivisionExpression = internal::IsDivisionExpression<PlainType<T>>::value;
 }  // namespace AD::Forward

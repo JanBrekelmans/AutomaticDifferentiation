@@ -73,9 +73,21 @@ namespace AD::Forward {
 
                 dual.a += temp.a;
                 dual.b += temp.b;
+            } else if constexpr (IsMultiplicationExpression<Other>) {
+                Dual<T> temp = left(other);
+                assign(dual, right(other));
+
+                const T v = dual.a;
+                dual.a *= temp.a;
+                dual.b = v * temp.b + dual.b * temp.a;
+            } else if constexpr (IsDivisionExpression<Other>) {
+                Dual<T> temp = right(other);
+                assign(dual, left(other));
+
+                const T v = dual.a;
+                dual.a /= temp.a;
+                dual.b = (dual.b * temp.a - v * temp.b) / (temp.a * temp.a);
             }
-        } else {
-            auto i = 1;
         }
     }
 
@@ -270,6 +282,36 @@ namespace AD::Forward {
             return std::forward<R>(r) + std::forward<L>(l);
         } else {
             return AdditionExpression<DualType<L>, DualType<R>>{l, r};
+        }
+    }
+
+    template <typename L, typename R>
+        requires IsOperable<L, R>
+    constexpr auto operator-(L&& l, R&& r) {
+        if constexpr (IsArithmetic<R>) {
+            return std::forward<R>(r) + std::forward<L>(l);
+        } else {
+            return std::forward<L>(l) + (-std::forward<R>(r));
+        }
+    }
+
+    template <typename L, typename R>
+        requires IsOperable<L, R>
+    constexpr auto operator*(L&& l, R&& r) {
+        if constexpr (IsArithmetic<R>) {
+            return std::forward<R>(r) * std::forward<L>(l);
+        } else {
+            return MultiplicationExpression<DualType<L>, DualType<R>>{l, r};
+        }
+    }
+
+    template <typename L, typename R>
+        requires IsOperable<L, R>
+    constexpr auto operator/(L&& l, R&& r) {
+        if constexpr (IsArithmetic<R>) {
+            return (1 / r) * std::forward<L>(l);
+        } else {
+            return DivisionExpression<DualType<L>, DualType<R>>{l, r};
         }
     }
 }  // namespace AD::Forward
