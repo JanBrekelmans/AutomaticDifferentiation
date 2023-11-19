@@ -87,6 +87,14 @@ namespace AD::Forward {
                 const T v = dual.a;
                 dual.a /= temp.a;
                 dual.b = (dual.b * temp.a - v * temp.b) / (temp.a * temp.a);
+            } else if constexpr (IsPowerExpression<Other>) {
+                Dual<T> temp = right(other);
+                assign(dual, left(other));
+
+                const double v = dual.a;
+                dual.a = pow(dual.a, temp.a);
+                dual.b = pow(v, temp.a - One<T>) * (temp.a * dual.b + v * log(v) * temp.b);
+                auto i = 1;
             }
         }
     }
@@ -289,7 +297,7 @@ namespace AD::Forward {
         requires IsOperable<L, R>
     constexpr auto operator-(L&& l, R&& r) {
         if constexpr (IsArithmetic<R>) {
-            return std::forward<R>(r) + std::forward<L>(l);
+            return -std::forward<R>(r) + std::forward<L>(l);
         } else {
             return std::forward<L>(l) + (-std::forward<R>(r));
         }
@@ -313,5 +321,11 @@ namespace AD::Forward {
         } else {
             return DivisionExpression<DualType<L>, DualType<R>>{l, r};
         }
+    }
+
+    template <typename L, typename R>
+        requires IsOperable<L, R>
+    constexpr auto pow(L&& l, R&& r) {
+        return PowerExpression<DualType<L>, DualType<R>>{l, r};
     }
 }  // namespace AD::Forward

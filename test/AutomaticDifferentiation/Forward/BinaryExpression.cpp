@@ -229,3 +229,59 @@ TEST_CASE("Division operator nested") {
     CHECK(y.a == 2.0);
     CHECK(z.a == 1.0/2.0);
 }
+
+TEST_CASE("Power operator 1") {
+    using namespace AD::Forward;
+
+    dual x = 2.0;
+    dual y = pow(2.0, x);
+    CHECK(y.a == 4.0);
+}
+
+TEST_CASE("Power operator 2") {
+    using namespace AD::Forward;
+
+    dual x = 2.0;
+    dual y = pow(x, 3.0);
+    CHECK(y.a == 8.0);
+}
+
+TEST_CASE("Power Operator 3") {
+    using namespace AD::Forward;
+    dual x = 1.0;
+    auto f = [](dual t) -> dual { return pow(2.0, t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == 2.0);
+    CHECK(dy == log(2.0) * 2.0);
+}
+
+TEST_CASE("Power Operator 3") {
+    using namespace AD::Forward;
+    dual x = 3.0;
+    auto f = [](dual t) -> dual { return pow(t,2.0); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == 9.0);
+    CHECK(dy == 6.0);
+}
+
+TEST_CASE("Power Operator 4") {
+    using namespace AD::Forward;
+    dual x = 3.0;
+    auto f = [](dual t) -> dual { return pow(t, t); };
+    auto [y, dy] = derivative(f, at(x), x);
+
+    CHECK(y == pow(3.0,3.0));
+    CHECK(doctest::Approx(dy) == pow(3.0,3.0)*(log(3.0) + 1.0));
+}
+
+TEST_CASE("Power operator nested") {
+    using namespace AD::Forward;
+
+    dual x = 2.0;
+    dual y = pow(x, pow(x, x));
+    dual z = pow(pow(x, x), x);
+    CHECK(y.a == 16.0);
+    CHECK(z.a == 16.0);
+}

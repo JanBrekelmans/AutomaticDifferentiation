@@ -216,11 +216,15 @@ namespace AD::Forward {
 
     // Binary Expressions
 
+    using std::pow;
+
     struct AdditionOperation {};
 
     struct MultiplicationOperation {};
 
     struct DivisionOperation {};
+
+    struct PowerOperation {};
 
     template <typename L, typename R>
     using AdditionExpression = BinaryExpression<AdditionOperation, L, R>;
@@ -230,6 +234,9 @@ namespace AD::Forward {
 
     template <typename L, typename R>
     using DivisionExpression = BinaryExpression<DivisionOperation, L, R>;
+
+    template <typename L, typename R>
+    using PowerExpression = BinaryExpression<PowerOperation, L, R>;
 
     namespace internal {
         template <typename T>
@@ -262,6 +269,16 @@ namespace AD::Forward {
             constexpr static bool value = true;
         };
 
+        template <typename T>
+        struct IsPowerExpression {
+            constexpr static bool value = false;
+        };
+
+        template <typename L, typename R>
+        struct IsPowerExpression<PowerExpression<L, R>> {
+            constexpr static bool value = true;
+        };
+
     }  // namespace internal
 
     template <typename T>
@@ -272,4 +289,7 @@ namespace AD::Forward {
 
     template <typename T>
     concept IsDivisionExpression = internal::IsDivisionExpression<PlainType<T>>::value;
+
+    template <typename T>
+    concept IsPowerExpression = internal::IsPowerExpression<PlainType<T>>::value;
 }  // namespace AD::Forward

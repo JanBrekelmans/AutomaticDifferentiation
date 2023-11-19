@@ -4,14 +4,7 @@
 
 int main() {
     using namespace AD::Forward;
-
-    dual x = 2.0;
-    auto v = x - x - x;
-
-    auto w = 5 * x * 5;
-
-    auto f = [](dual t) -> dual { return 1/t; };
+    dual x = 3.0;
+    auto f = [](dual t) -> dual { return pow(t, 2.0); };
     auto [y, dy] = derivative(f, at(x), x);
-    
-    std::cout << y << "\t" << dy;
 }
